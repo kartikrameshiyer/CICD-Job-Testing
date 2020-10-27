@@ -8,14 +8,19 @@ jobs:
     steps:
       - run: echo hello
   print_world:
+    docker:
+      - image: circleci/node:13.8.0
     steps:
       - run: echo world
   
   envname:
+    docker:
+      - image: circleci/node:13.8.0
     steps:
+      - checkout
       - run:
-        command: |
-          echo $Name
+          command: |
+            echo $Name
 
     
 workflows:
@@ -27,3 +32,6 @@ workflows:
       - print_world:
           requires:
             - print_hello
+      - envname:
+          requires:
+            - print_world

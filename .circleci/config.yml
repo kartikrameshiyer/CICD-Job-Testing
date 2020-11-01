@@ -8,10 +8,10 @@ jobs:
     steps:
       - run: echo "text to outout here" > output.txt
       - persist_to_workspace:
-          root: /tmp/dir
+          root: /tmp/workspace
           paths:
-            - foo/bar
-            - baz
+            - target/*
+            - build/*
   print_output_file:
     docker:
       - image: circleci/node:13.8.0

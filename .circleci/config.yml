@@ -6,7 +6,7 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: echo "text to outout here" > ~/output.txt
+      - run: echo "Hello kartik, this is called sharing files" > ~/output.txt
       - persist_to_workspace:
           root: ~/
           paths:

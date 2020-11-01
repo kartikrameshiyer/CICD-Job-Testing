@@ -5,7 +5,7 @@ version: 2.1
 defaults: &defaults
   docker:
     - image: circleci/node:13.8.0
-  working_directory: ~/
+#  working_directory: ~/
 
 commands:
   sayhello:
@@ -38,7 +38,6 @@ jobs:
     <<: *defaults
     steps:
       - sayhello:
-          to: "Kartik"
 
 workflows:
   # Name the workflow "welcome"

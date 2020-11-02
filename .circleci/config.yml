@@ -15,7 +15,8 @@ commands:
         type: string
         default: "Hello world"
     steps:
-      - run: echo << parameter.to >>
+      - run: echo <<
+                 parameter.to >>
 
 jobs:
   save_hello_world_output:

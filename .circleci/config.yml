@@ -39,6 +39,7 @@ jobs:
     <<: *defaults
     steps:
       - sayhello:
+          to: "Kartik"
 
 workflows:
   # Name the workflow "welcome"

@@ -38,7 +38,7 @@ jobs:
     <<: *defaults
     steps:
       - sayhello:
-          to: "kartik"
+          to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
 
 workflows:
   # Name the workflow "welcome"

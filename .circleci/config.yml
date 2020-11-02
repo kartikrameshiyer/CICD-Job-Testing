@@ -15,7 +15,7 @@ commands:
         type: string
         default: "Hello world"
     steps:
-      - run: echo << parameter.to >>
+      - run: echo << parameters.to >>
 
 jobs:
   save_hello_world_output:
@@ -38,6 +38,7 @@ jobs:
     <<: *defaults
     steps:
       - sayhello:
+          to: "kartik"
 
 workflows:
   # Name the workflow "welcome"

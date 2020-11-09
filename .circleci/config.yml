@@ -63,4 +63,4 @@ workflows:
             - print_output_file
       - checkRollBack:
           requires:
-            - checkcommand:
+            - checkcommand

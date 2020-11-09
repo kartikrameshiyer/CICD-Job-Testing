@@ -62,5 +62,5 @@ workflows:
           requires:
             - print_output_file
       - checkRollBack:
-          requirs:
+          requires:
             - checkcommand:

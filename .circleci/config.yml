@@ -39,6 +39,15 @@ jobs:
     steps:
       - sayhello:
           to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
+  # Roll back code to clean up when build fails.
+  checkRollBack:
+    <<: *defaults
+    steps:
+      - run: return 1
+      - run:
+          name: on error
+          command: echo "Hello Error!"
+          when: on_fail
 
 workflows:
   # Name the workflow "welcome"
@@ -52,3 +61,6 @@ workflows:
       - checkcommand:
           requires:
             - print_output_file
+      - checkRollBack:
+          requirs:
+            - checkcommand:

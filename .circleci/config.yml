@@ -101,5 +101,4 @@ workflows:
           context: aws
       - getEC2Ip:
           requires:
-            - createEc2:
-                context: aws
+            - createEc2

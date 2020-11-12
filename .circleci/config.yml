@@ -55,7 +55,11 @@ jobs:
 
   createEc2:
     <<: *defaults
+    executor: aws-cli/default
     steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: udacity
       - run: aws ec2 run-instances \
           --image-id ami-07a29e5e945228fa1 \
           --count 1 \
@@ -66,9 +70,13 @@ jobs:
   getEC2Ip:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt
+      - checkout
+      - aws-cli/setup:
+          profile-name: udacity
       - run: aws ec2 describe-instances \
           --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' \
           --filters "Name=tag:Project,Values=udacity" \
@@ -89,7 +97,9 @@ workflows:
       #     - checkRollBack:
       #         requires:
       #          - checkcommand
-      - createEc2
+      - createEc2:
+          context: aws
       - getEC2Ip:
           requires:
-            - createEc2
+            - createEc2:
+                context: aws

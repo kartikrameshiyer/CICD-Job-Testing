@@ -97,8 +97,7 @@ workflows:
       #     - checkRollBack:
       #         requires:
       #          - checkcommand
-      - createEc2:
-          context: aws
+      - createEc2
       - getEC2Ip:
           requires:
             - createEc2

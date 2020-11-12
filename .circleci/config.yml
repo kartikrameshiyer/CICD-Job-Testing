@@ -67,12 +67,7 @@ jobs:
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             aws configure set default.region $AWS_DEFAULT_REGION
-      - run: aws ec2 run-instances \
-          --image-id ami-07a29e5e945228fa1 \
-          --count 1 \
-          --instance-type t2.micro \
-          --key-name Test \
-          --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --key-name Test --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
 
   getEC2Ip:
     <<: *defaults
@@ -84,10 +79,7 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: udacity
-      - run: aws ec2 describe-instances \
-          --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' \
-          --filters "Name=tag:Project,Values=udacity" \
-          --output text >> ~/inventory.txt
+      - run: aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
 
 workflows:
   # Name the workflow "welcome"

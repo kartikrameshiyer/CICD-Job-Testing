@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@1.3.0
   aws-ecr: circleci/aws-ecr@6.14.0
+  aws-ecs: circleci/aws-ecs@1.4.0
 # Use a package of configuration called an orb.
 # Anchors and Alias
 defaults: &defaults
@@ -66,8 +67,8 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region $AWS_DEFAULT_REGION
-      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --key-name Test --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+            region: AWS_REGION
+      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
 
   getEC2Ip:
     <<: *defaults

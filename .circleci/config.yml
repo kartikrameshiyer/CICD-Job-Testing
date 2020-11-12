@@ -49,6 +49,29 @@ jobs:
           command: echo "Hello Error!"
           when: on_fail
 
+  # Creating a EC2 instance
+
+  createEc2:
+    <<: *defaults
+    steps:
+      - run: aws ec2 run-instances \
+          --image-id ami-07a29e5e945228fa1 \
+          --count 1 \
+          --instance-type t2.micro \
+          --key-name Test \
+          --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+
+  getEC2Ip:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/inventory.txt
+      - run: aws ec2 describe-instances \
+          --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' \
+          --filters "Name=tag:Project,Values=udacity" \
+          --output text >> ~/inventory.txt
+
 workflows:
   # Name the workflow "welcome"
   welcome:

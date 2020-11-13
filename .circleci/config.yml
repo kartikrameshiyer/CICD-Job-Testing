@@ -22,36 +22,35 @@ commands:
       - run: echo << parameters.to >>
 
 jobs:
-  save_hello_world_output:
-    <<: *defaults
-    steps:
-      - run: echo "Hello kartik, this is called sharing files" > ~/output.txt
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - output.txt
-  print_output_file:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/output.txt
-
-  # adding another job to check the commands fucntionality
-  checkcommand:
-    <<: *defaults
-    steps:
-      - sayhello:
-          to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
-  # Roll back code to clean up when build fails.
-  checkRollBack:
-    <<: *defaults
-    steps:
-      - run: return 1
-      - run:
-          name: on error
-          command: echo "Hello Error!"
-          when: on_fail
+  # save_hello_world_output:
+  #   <<: *defaults
+  #   steps:
+  #     - run: echo "Hello kartik, this is called sharing files" > ~/output.txt
+  #     - persist_to_workspace:
+  #         root: ~/
+  #         paths:
+  #           - output.txt
+  # print_output_file:
+  #   <<: *defaults
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run: cat ~/output.txt
+  # # adding another job to check the commands fucntionality
+  # checkcommand:
+  #   <<: *defaults
+  #   steps:
+  #     - sayhello:
+  #         to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
+  # # Roll back code to clean up when build fails.
+  # checkRollBack:
+  # <<: *defaults
+  # steps:
+  #   - run: return 1
+  #   - run:
+  #       name: on error
+  #       command: echo "Hello Error!"
+  #       when: on_fail
 
   # Creating a EC2 instance
 
@@ -67,7 +66,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --region=us-west-2 --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
 
   getEC2Ip:
     <<: *defaults

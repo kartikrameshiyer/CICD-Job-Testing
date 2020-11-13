@@ -71,14 +71,14 @@ jobs:
   getEC2Ip:
     <<: *defaults
     steps:
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - inventory.txt
       - checkout
       - aws-cli/setup:
           profile-name: udacity
       - run: aws ec2 describe-instances --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt
 
 workflows:
   # Name the workflow "welcome"

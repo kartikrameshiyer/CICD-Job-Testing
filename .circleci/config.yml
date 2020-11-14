@@ -79,6 +79,7 @@ jobs:
           root: ~/
           paths:
             - inventory.txt
+      - run: cat ~/inventory.txt
 
 workflows:
   # Name the workflow "welcome"

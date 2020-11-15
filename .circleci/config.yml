@@ -22,35 +22,35 @@ commands:
       - run: echo << parameters.to >>
 
 jobs:
-  # save_hello_world_output:
-  #   <<: *defaults
-  #   steps:
-  #     - run: echo "Hello kartik, this is called sharing files" > ~/output.txt
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - output.txt
-  # print_output_file:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run: cat ~/output.txt
-  # # adding another job to check the commands fucntionality
-  # checkcommand:
-  #   <<: *defaults
-  #   steps:
-  #     - sayhello:
-  #         to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
-  # # Roll back code to clean up when build fails.
-  # checkRollBack:
-  # <<: *defaults
-  # steps:
-  #   - run: return 1
-  #   - run:
-  #       name: on error
-  #       command: echo "Hello Error!"
-  #       when: on_fail
+  save_hello_world_output:
+    <<: *defaults
+    steps:
+      - run: echo "Hello kartik, this is called sharing files" > ~/output.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output.txt
+  print_output_file:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/output.txt
+  # adding another job to check the commands fucntionality
+  checkcommand:
+    <<: *defaults
+    steps:
+      - sayhello:
+          to: "Congrats! you have sucessfully implemented Commands, Anchors and Alias."
+  # Roll back code to clean up when build fails.
+  checkRollBack:
+  <<: *defaults
+  steps:
+    - run: return 1
+    - run:
+        name: on error
+        command: echo "Hello Error!"
+        when: on_fail
 
   # Creating a EC2 instance
 
@@ -86,16 +86,16 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      # - save_hello_world_output
-      # - print_output_file:
-      #     requires:
-      #       - save_hello_world_output
-      # - checkcommand:
-      #     requires:
-      #       - print_output_file
-      #     - checkRollBack:
-      #         requires:
-      #          - checkcommand
+      - save_hello_world_output
+      - print_output_file:
+          requires:
+            - save_hello_world_output
+      - checkcommand:
+          requires:
+            - print_output_file
+      - checkRollBack:
+          requires:
+            - checkcommand
       - createEc2
       - getEC2Ip:
           requires:

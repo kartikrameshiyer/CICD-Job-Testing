@@ -59,7 +59,7 @@ jobs:
       - run:
           name: Smoke test
           command: |
-            if curl -s --head "https://google.com" 
+            if curl -s --head "https://google333.com" 
             then
               return 0
             else
@@ -100,7 +100,10 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - save_hello_world_output
+      - smokeTest
+      - save_hello_world_output:
+          requires:
+            - smokeTest
       - print_output_file:
           requires:
             - save_hello_world_output
@@ -108,9 +111,6 @@ workflows:
           requires:
             - print_output_file
 
-      - smokeTest:
-          requires:
-            - checkcommand
       # - checkRollBack:
       #     requires:
       #       - checkcommand

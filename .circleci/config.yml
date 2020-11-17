@@ -51,35 +51,49 @@ jobs:
           name: on error
           command: echo "Hello Error!"
           when: on_fail
+  smokeTest:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: apk add --update curl
+      - run:
+        name: Smoke test
+        command: |
+          if curl -s --head "https://google.com" 
+          then
+            return 0
+          else
+            return 1
+          fi
 
   # Creating a EC2 instance
 
-  createEc2:
-    <<: *defaults
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - aws-cli/setup:
-          profile-name: udacity
-      - run:
-          name: configure aws-cli
-          command: |
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --region=us-west-2 --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+  # createEc2:
+  #   <<: *defaults
+  #   executor: aws-cli/default
+  #   steps:
+  #     - checkout
+  #     - aws-cli/setup:
+  #         profile-name: udacity
+  #     - run:
+  #         name: configure aws-cli
+  #         command: |
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #     - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --region=us-west-2 --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
 
-  getEC2Ip:
-    <<: *defaults
-    steps:
-      - checkout
-      - aws-cli/setup:
-          profile-name: udacity
-      - run: aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - inventory.txt
-      - run: cat ~/inventory.txt
+  # getEC2Ip:
+  #   <<: *defaults
+  #   steps:
+  #     - checkout
+  #     - aws-cli/setup:
+  #         profile-name: udacity
+  #     - run: aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
+  #     - persist_to_workspace:
+  #         root: ~/
+  #         paths:
+  #           - inventory.txt
+  #     - run: cat ~/inventory.txt
 
 workflows:
   # Name the workflow "welcome"
@@ -93,10 +107,14 @@ workflows:
       - checkcommand:
           requires:
             - print_output_file
-      - checkRollBack:
+
+      - smokeTest:
           requires:
             - checkcommand
-      - createEc2
-      - getEC2Ip:
-          requires:
-            - createEc2
+      # - checkRollBack:
+      #     requires:
+      #       - checkcommand
+      # - createEc2
+      # - getEC2Ip:
+      #     requires:
+      #       - createEc2

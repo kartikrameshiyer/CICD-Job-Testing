@@ -21,6 +21,16 @@ commands:
     steps:
       - run: echo << parameters.to >>
 
+  destroy_environment:
+    description: " Commands to delete the stack in case there is a failure "
+    parameters:
+    steps:
+      - run:
+          name: Delete the stack
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name demostack
+
 jobs:
   save_hello_world_output:
     <<: *defaults
@@ -51,6 +61,7 @@ jobs:
           name: on error
           command: echo "Hello Error!"
           when: on_fail
+
   smokeTest:
     docker:
       - image: alpine:latest
@@ -65,51 +76,66 @@ jobs:
             else
               return 1
             fi
+      - destroy_environment
 
-  # Creating a EC2 instance
+  configure_infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: create infrastructure
+          command: |
+            aws cloudformation create-stack \
+              --stack-name demostack \
+              --template-body template.yml
 
-  # createEc2:
-  #   <<: *defaults
-  #   executor: aws-cli/default
-  #   steps:
-  #     - checkout
-  #     - aws-cli/setup:
-  #         profile-name: udacity
-  #     - run:
-  #         name: configure aws-cli
-  #         command: |
-  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-  #     - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --region=us-west-2 --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+  #Creating a EC2 instance
 
-  # getEC2Ip:
-  #   <<: *defaults
-  #   steps:
-  #     - checkout
-  #     - aws-cli/setup:
-  #         profile-name: udacity
-  #     - run: aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - inventory.txt
-  #     - run: cat ~/inventory.txt
+  createEc2:
+    <<: *defaults
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: udacity
+      - run:
+          name: configure aws-cli
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - run: aws ec2 run-instances --image-id ami-07a29e5e945228fa1 --count 1 --instance-type t2.micro --region=us-west-2 --tag-specifications 'ResourceType=instance,Tags=[{Key=Project,Value=udacity}]'
+
+  getEC2Ip:
+    <<: *defaults
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: udacity
+      - run: aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].[PublicIpAddress,Tags[*]]' --filters "Name=tag:Project,Values=udacity" --output text >> ~/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - inventory.txt
+      - run: cat ~/inventory.txt
 
 workflows:
   # Name the workflow "welcome"
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - smokeTest
-      - save_hello_world_output:
-          requires:
-            - smokeTest
-      - print_output_file:
-          requires:
-            - save_hello_world_output
-      - checkcommand:
-          requires:
-            - print_output_file
+      - configure_infrastructure
+
+      # - smokeTest
+      # - save_hello_world_output:
+      #     requires:
+      #       - smokeTest
+      # - print_output_file:
+      #     requires:
+      #       - save_hello_world_output
+      # - checkcommand:
+      #     requires:
+      #       - print_output_file
 
       # - checkRollBack:
       #     requires:

@@ -126,6 +126,9 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - configure_infrastructure
+      - smokeTest:
+          requires:
+            - configure_infrastructure
 
       # - smokeTest
       # - save_hello_world_output:

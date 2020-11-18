@@ -29,7 +29,7 @@ commands:
           name: Delete the stack
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name demostack
+            aws cloudformation delete-stack --stack-name demostack --region us-west-2
 
 jobs:
   save_hello_world_output:

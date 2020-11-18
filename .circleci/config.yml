@@ -70,12 +70,12 @@ jobs:
       - run:
           name: install aws
           command: |
-            RUN apk add --no-cache \
-                python3 \
-                py3-pip \
+            apk add --no-cache \
+            python3 \
+            py3-pip \
             && pip3 install --upgrade pip \
             && pip3 install \
-                awscli \
+            awscli \
             && rm -rf /var/cache/apk/*
       - run:
           name: Smoke test

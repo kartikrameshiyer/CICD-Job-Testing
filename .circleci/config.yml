@@ -89,7 +89,7 @@ jobs:
             aws cloudformation create-stack \
               --stack-name demostack \
               --template-body template.yml \
-              --region=us-west-2
+              --region us-west-2
 
   #Creating a EC2 instance
 
